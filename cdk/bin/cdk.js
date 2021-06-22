@@ -2,6 +2,7 @@
 
 const cdk = require('@aws-cdk/core');
 const { CdkStack } = require('../lib/react-js-app-stack');
+const { PipelineStack } = require('../lib/react-s3-pipeline-stack');
 
 const app = new cdk.App();
 const webapp = new CdkStack(app, 'ReactJsAppStack', {
@@ -18,4 +19,8 @@ const webapp = new CdkStack(app, 'ReactJsAppStack', {
   // env: { account: '123456789012', region: 'us-east-1' },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+});
+const pipeline = new PipelineStack(app, 'ReactJsPipelineStack', {
+  webapp: webapp,
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
