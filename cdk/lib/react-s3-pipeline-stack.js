@@ -47,6 +47,26 @@ class ReactS3PipelineStack extends Stack{
             }
         });
 
+        // Build project to run automatic tests
+        const testsBuildProject = new codebuild.PipelineProject(this, "TestsBuildProject", {
+            buildSpec: codebuild.BuildSpec.fromObject({
+            version: "0.2",
+            phases: {
+                install: {
+                    commands: [
+                        "npm i"
+                    ]
+                },
+                build: {
+                    commands: "npm run test -- --watchAll=false"
+                }
+            }
+            }),
+            environment: {
+                buildImage: codebuild.LinuxBuildImage.STANDARD_4_0
+            }
+        });
+
         // Create the build project that will invalidate the CloudFront cache
         const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidateProject`, {
             buildSpec: codebuild.BuildSpec.fromObject({
@@ -91,7 +111,16 @@ class ReactS3PipelineStack extends Stack{
                     }),
                 ],
               },
-
+              {
+                stageName: 'Test',
+                actions: [
+                    new codepipeline_actions.GitHubSourceAction({
+                        actionName: 'Automatic_Tests',
+                        project: testsBuildProject,
+                        input: sourceOutput,
+                    }),
+                ],
+              },
               {
                 stageName: 'Build',
                 actions: [
