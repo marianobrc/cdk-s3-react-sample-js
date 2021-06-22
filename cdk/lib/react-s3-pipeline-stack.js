@@ -114,7 +114,7 @@ class ReactS3PipelineStack extends Stack{
               {
                 stageName: 'Test',
                 actions: [
-                    new codepipeline_actions.GitHubSourceAction({
+                    new codepipeline_actions.CodeBuildAction({
                         actionName: 'Automatic_Tests',
                         project: testsBuildProject,
                         input: sourceOutput,
