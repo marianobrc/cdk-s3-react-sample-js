@@ -21,6 +21,7 @@ class ReviewAppsPipelineStack extends Stack{
         const secret = cdk.SecretValue.secretsManager('/cdk-react-js-sample/prod', {jsonField:'GITHUB_TOKEN'});
         const repo = cdk.SecretValue.secretsManager('/cdk-react-js-sample/prod', {jsonField:'GITHUB_REPO'}).toString();
         const owner = cdk.SecretValue.secretsManager('/cdk-react-js-sample/prod', {jsonField:'GITHUB_OWNER'}).toString();
+        const prBranch = cdk.SecretValue.secretsManager('/cdk-react-js-sample/prod', {jsonField:'GITHUB_PR_BRANCH'}).toString();
 
         // Build project to build the app code
         const appBuildProject = new codebuild.PipelineProject(this, "AppBuildProject", {
@@ -90,6 +91,7 @@ class ReviewAppsPipelineStack extends Stack{
             actionName: 'Github_PR',
             owner: owner,
             repo: repo,
+            branch: prBranch,
             oauthToken: secret,
             output: sourceOutput,
             trigger: codepipeline_actions.GitHubTrigger.NONE
